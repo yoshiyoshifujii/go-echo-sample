@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,13 +10,14 @@ import (
 )
 
 // CreateUser handles POST /users.
-func (h *Handler) CreateUser(ctx echo.Context) error {
-	var req api.CreateUserRequest
-	if err := ctx.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+func (h *Handler) CreateUser(_ context.Context, request api.CreateUserRequestObject) (api.CreateUserResponseObject, error) {
+	if request.Body == nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
 	}
+
+	req := request.Body
 	if req.Name == "" || req.Email == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "name and email are required")
+		return nil, echo.NewHTTPError(http.StatusBadRequest, "name and email are required")
 	}
 
 	h.mu.Lock()
@@ -30,5 +32,5 @@ func (h *Handler) CreateUser(ctx echo.Context) error {
 
 	h.users = append(h.users, user)
 
-	return ctx.JSON(http.StatusCreated, user)
+	return api.CreateUser201JSONResponse(user), nil
 }

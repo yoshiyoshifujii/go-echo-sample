@@ -2,6 +2,7 @@ package: api
 generate:
   echo-server: true
   models: true
+  strict-server: true
 output: api.gen.go
 output-options:
   skip-prune: true

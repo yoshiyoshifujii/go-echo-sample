@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
+	"context"
 
 	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
 )
 
 // GetHealth handles the health check endpoint.
-func (h *Handler) GetHealth(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, api.Health{Status: "ok"})
+func (h *Handler) GetHealth(_ context.Context, _ api.GetHealthRequestObject) (api.GetHealthResponseObject, error) {
+	return api.GetHealth200JSONResponse(api.Health{Status: "ok"}), nil
 }

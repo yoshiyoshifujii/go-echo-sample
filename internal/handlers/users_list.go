@@ -1,20 +1,18 @@
 package handlers
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
+	"context"
 
 	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
 )
 
 // ListUsers handles GET /users.
-func (h *Handler) ListUsers(ctx echo.Context) error {
+func (h *Handler) ListUsers(_ context.Context, _ api.ListUsersRequestObject) (api.ListUsersResponseObject, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
 	users := make([]api.User, len(h.users))
 	copy(users, h.users)
 
-	return ctx.JSON(http.StatusOK, users)
+	return api.ListUsers200JSONResponse(users), nil
 }
