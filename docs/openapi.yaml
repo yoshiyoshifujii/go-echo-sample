@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: Go Echo Sample API
+  version: "1.0.0"
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns application health status.
+      operationId: getHealth
+      responses:
+        "200":
+          description: Health status payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  schemas:
+    Health:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: ok
