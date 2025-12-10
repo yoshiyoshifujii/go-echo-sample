@@ -5,18 +5,41 @@ package api
 
 import (
 	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// CreateUserRequest defines model for CreateUserRequest.
+type CreateUserRequest struct {
+	Email openapi_types.Email `json:"email"`
+	Name  string              `json:"name"`
+}
 
 // Health defines model for Health.
 type Health struct {
 	Status string `json:"status"`
 }
 
+// User defines model for User.
+type User struct {
+	Email openapi_types.Email `json:"email"`
+	Id    int64               `json:"id"`
+	Name  string              `json:"name"`
+}
+
+// CreateUserJSONRequestBody defines body for CreateUser for application/json ContentType.
+type CreateUserJSONRequestBody = CreateUserRequest
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Health check
 	// (GET /health)
 	GetHealth(ctx echo.Context) error
+	// List users
+	// (GET /users)
+	ListUsers(ctx echo.Context) error
+	// Create user
+	// (POST /users)
+	CreateUser(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -30,6 +53,24 @@ func (w *ServerInterfaceWrapper) GetHealth(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetHealth(ctx)
+	return err
+}
+
+// ListUsers converts echo context to params.
+func (w *ServerInterfaceWrapper) ListUsers(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListUsers(ctx)
+	return err
+}
+
+// CreateUser converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateUser(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreateUser(ctx)
 	return err
 }
 
@@ -62,5 +103,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/health", wrapper.GetHealth)
+	router.GET(baseURL+"/users", wrapper.ListUsers)
+	router.POST(baseURL+"/users", wrapper.CreateUser)
 
 }

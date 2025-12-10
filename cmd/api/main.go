@@ -15,7 +15,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	api.RegisterHandlers(e, handlers.NewHealthHandler())
+	api.RegisterHandlers(e, handlers.NewHandler())
 
 	if err := e.Start(":8080"); err != nil {
 		log.Fatal(err)

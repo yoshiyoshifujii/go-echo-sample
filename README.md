@@ -20,7 +20,9 @@ Echo と OpenAPI (oapi-codegen) で組んだシンプルなサーバーのサン
   go run ./cmd/api
   ```
 
-  ヘルスチェック: `GET http://localhost:8080/health`
+  - ヘルスチェック: `GET http://localhost:8080/health`
+  - ユーザー作成: `POST http://localhost:8080/users`（例: `{"name":"Jane","email":"jane@example.com"}`）
+  - ユーザー一覧: `GET http://localhost:8080/users`
 
 ## メモ
 
