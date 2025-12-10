@@ -1,3 +1,4 @@
+// Package main starts the Echo HTTP server.
 package main
 
 import (

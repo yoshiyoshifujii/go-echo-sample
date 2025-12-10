@@ -1,0 +1,18 @@
+version: 2
+
+run:
+  timeout: 3m
+  tests: true
+
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - revive
+
+linters-settings:
+  revive:
+    ignore-generated-header: true
+
+issues:
+  exclude-use-default: false
