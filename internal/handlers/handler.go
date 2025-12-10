@@ -1,22 +1,18 @@
 // Package handlers contains Echo handlers implementing the generated ServerInterface.
 package handlers
 
-import (
-	"sync"
-
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
-)
+import "github.com/yoshiyoshifujii/go-echo-sample/internal/usecase"
 
 // Handler implements the generated ServerInterface.
 type Handler struct {
-	mu     sync.Mutex
-	users  []api.User
-	nextID int64
+	createUser *usecase.CreateUser
+	findUser   *usecase.FindUser
 }
 
-// NewHandler returns a handler with in-memory storage.
-func NewHandler() *Handler {
+// NewHandler wires user use cases.
+func NewHandler(createUser *usecase.CreateUser, findUser *usecase.FindUser) *Handler {
 	return &Handler{
-		nextID: 1,
+		createUser: createUser,
+		findUser:   findUser,
 	}
 }

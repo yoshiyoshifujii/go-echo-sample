@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
@@ -40,9 +41,9 @@ type ServerInterface interface {
 	// Health check
 	// (GET /health)
 	GetHealth(ctx echo.Context) error
-	// List users
-	// (GET /users)
-	ListUsers(ctx echo.Context) error
+	// Get user
+	// (GET /users/{id})
+	GetUser(ctx echo.Context) error
 	// Create user
 	// (POST /users)
 	CreateUser(ctx echo.Context) error
@@ -62,12 +63,12 @@ func (w *ServerInterfaceWrapper) GetHealth(ctx echo.Context) error {
 	return err
 }
 
-// ListUsers converts echo context to params.
-func (w *ServerInterfaceWrapper) ListUsers(ctx echo.Context) error {
+// GetUser converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ListUsers(ctx)
+	err = w.Handler.GetUser(ctx)
 	return err
 }
 
@@ -109,7 +110,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/health", wrapper.GetHealth)
-	router.GET(baseURL+"/users", wrapper.ListUsers)
+	router.GET(baseURL+"/users/:id", wrapper.GetUser)
 	router.POST(baseURL+"/users", wrapper.CreateUser)
 
 }
@@ -130,16 +131,17 @@ func (response GetHealth200JSONResponse) VisitGetHealthResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ListUsersRequestObject struct {
+type GetUserRequestObject struct {
+	Id int64
 }
 
-type ListUsersResponseObject interface {
-	VisitListUsersResponse(w http.ResponseWriter) error
+type GetUserResponseObject interface {
+	VisitGetUserResponse(w http.ResponseWriter) error
 }
 
-type ListUsers200JSONResponse []User
+type GetUser200JSONResponse User
 
-func (response ListUsers200JSONResponse) VisitListUsersResponse(w http.ResponseWriter) error {
+func (response GetUser200JSONResponse) VisitGetUserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -168,9 +170,9 @@ type StrictServerInterface interface {
 	// Health check
 	// (GET /health)
 	GetHealth(ctx context.Context, request GetHealthRequestObject) (GetHealthResponseObject, error)
-	// List users
-	// (GET /users)
-	ListUsers(ctx context.Context, request ListUsersRequestObject) (ListUsersResponseObject, error)
+	// Get user
+	// (GET /users/{id})
+	GetUser(ctx context.Context, request GetUserRequestObject) (GetUserResponseObject, error)
 	// Create user
 	// (POST /users)
 	CreateUser(ctx context.Context, request CreateUserRequestObject) (CreateUserResponseObject, error)
@@ -211,23 +213,34 @@ func (sh *strictHandler) GetHealth(ctx echo.Context) error {
 	return nil
 }
 
-// ListUsers operation middleware
-func (sh *strictHandler) ListUsers(ctx echo.Context) error {
-	var request ListUsersRequestObject
+// GetUser operation middleware
+func (sh *strictHandler) GetUser(ctx echo.Context) error {
+	var request GetUserRequestObject
+
+	idParam := ctx.Param("id")
+	if idParam == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "request does not have 'id' in path")
+	}
+
+	var err error
+	request.Id, err = strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid parameter id: %v", err))
+	}
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.ListUsers(ctx.Request().Context(), request.(ListUsersRequestObject))
+		return sh.ssi.GetUser(ctx.Request().Context(), request.(GetUserRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "ListUsers")
+		handler = middleware(handler, "GetUser")
 	}
 
 	response, err := handler(ctx, request)
 
 	if err != nil {
 		return err
-	} else if validResponse, ok := response.(ListUsersResponseObject); ok {
-		return validResponse.VisitListUsersResponse(ctx.Response())
+	} else if validResponse, ok := response.(GetUserResponseObject); ok {
+		return validResponse.VisitGetUserResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("unexpected response type: %T", response)
 	}

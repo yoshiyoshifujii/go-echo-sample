@@ -33,19 +33,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+  /users/{id}:
     get:
-      summary: List users
-      description: Retrieve all users.
-      operationId: listUsers
+      summary: Get user
+      description: Retrieve a user by ID.
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
-          description: Array of users.
+          description: Retrieved user.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found.
 components:
   schemas:
     Health:
