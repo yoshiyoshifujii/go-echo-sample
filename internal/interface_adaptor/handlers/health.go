@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
+	"github.com/yoshiyoshifujii/go-echo-sample/internal/interface_adaptor/api"
 )
 
 // GetHealth handles the health check endpoint.

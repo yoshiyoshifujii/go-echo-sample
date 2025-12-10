@@ -7,9 +7,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/handlers"
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/repository/memory"
+	"github.com/yoshiyoshifujii/go-echo-sample/internal/interface_adaptor/api"
+	"github.com/yoshiyoshifujii/go-echo-sample/internal/interface_adaptor/handlers"
+	"github.com/yoshiyoshifujii/go-echo-sample/internal/interface_adaptor/repository/memory"
 	"github.com/yoshiyoshifujii/go-echo-sample/internal/usecase"
 )
 

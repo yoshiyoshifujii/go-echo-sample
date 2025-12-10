@@ -13,7 +13,7 @@ help:
 	@echo "make build     - go build ./cmd/api"
 
 generate:
-	go generate ./internal/api
+	go generate ./internal/interface_adaptor/api
 
 run:
 	go run ./cmd/api

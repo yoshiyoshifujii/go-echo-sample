@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
-	"github.com/yoshiyoshifujii/go-echo-sample/internal/api"
+	"github.com/yoshiyoshifujii/go-echo-sample/internal/interface_adaptor/api"
 )
 
 // CreateUser handles POST /users.
